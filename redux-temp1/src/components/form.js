@@ -1,5 +1,5 @@
 import React from 'react';
-import {formData, allCity} from './../actionMethods/auth';
+import {userData, allCity} from './../actionMethods/auth';
 import {bindActionCreators} from 'redux';
 import './comoponents.css';
 import Header from './header';
@@ -32,7 +32,14 @@ class Form extends React.Component {
 
     formHandler = (e) => {
         e.preventDefault();
-        this.props.formData(this.state.userValues);
+        let Obj=new FormData();
+        Obj.append('name',this.state.userValues.name);
+        Obj.append('email',this.state.userValues.email);
+        Obj.append('hobby',this.state.userValues.hobby);
+        Obj.append('city',this.state.userValues.city);
+        Obj.append('fileName',this.state.fileName);
+        console.log(this.state);
+        this.props.userData(Obj);
     };
     changeHandler = (e) => {
         const {userValues} = this.state;
@@ -88,8 +95,9 @@ class Form extends React.Component {
                                         </select>
                                     </div>
                                     <div className="form-group">
+
                                         <label>Document:</label>
-                                        <input type="file" className="form-control" name="file" multiple="multiple" onChange={this.handleFileChange}/>
+                                        <input type="file" className="form-control" name="fileName" multiple="multiple" onChange={(e)=>{ this.setState({fileName:e.target.files[0]}) }}/>
                                     </div>
                                     <button type="submit" className="btn btn-primary">Submit</button>
                                 </form>
@@ -109,5 +117,5 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({formData, allCity}, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({userData, allCity}, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(Form);

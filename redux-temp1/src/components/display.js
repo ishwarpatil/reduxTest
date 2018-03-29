@@ -82,7 +82,7 @@ class Display extends React.Component{
                         email: value.email,
                         hobby: value.hobby,
                         city: value.city,
-                }},()=>{
+                    }},()=>{
                     console.log(this.state.userValues.hobby);
                 })
             }
@@ -191,7 +191,7 @@ class Display extends React.Component{
                                                     this.props.allCitys && this.props.allCitys.map((value,index) => {
                                                         return this.state.userValues.city===value.citys?
                                                             <option selected="true" value={value.citys}>{value.citys}</option>
-                                                        :
+                                                            :
                                                             <option value={value.citys}>{value.citys}</option>
                                                     })
                                                 }
@@ -228,33 +228,34 @@ class Display extends React.Component{
 
                         <table id="example" className="table table-striped">
                             <thead>
-                                <tr>
-                                    <th>Name&nbsp;&nbsp;&nbsp;<i className="fa" id='Name' onClick={this.handleSortAsc}>&#xf0de;</i><i className="fa" id='Name' onClick={this.handleSortDesc}>&#xf0dd;</i></th>
-                                    <th>Email</th>
-                                    <th>Hobby</th>
-                                    <th>City</th>
-                                    <th>Delete</th>
-                                    <th>Edit</th>
-                                </tr>
+                            <tr>
+                                <th>Name&nbsp;&nbsp;&nbsp;<i className="fa" id='Name' onClick={this.handleSortAsc}>&#xf0de;</i><i className="fa" id='Name' onClick={this.handleSortDesc}>&#xf0dd;</i></th>
+                                <th>Email</th>
+                                <th>Hobby</th>
+                                <th>City</th>
+                                <th>Files</th>
+                                <th>Delete</th>
+                                <th>Edit</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {
-                                    Recodes.map((value, index) => {
-                                        return <tr key={index}><td>{value.name}</td><td>{value.email}</td><td>{value.hobby}</td><td>{value.city}</td><td><button onClick={()=> this.dataDelete(value._id)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
-                                    })
-                                }
-                                <tr>
-                                    <td colSpan={6}>
-                                        {pages}
-                                    </td>
-                                </tr>
+                            {
+                                Recodes.map((value, index) => {
+                                    return <tr key={index}><td>{value.name}</td><td>{value.email}</td><td>{value.hobby}</td><td>{value.city}</td><td><img src={"http://localhost:8080/upload/"+value.fileName} width={50} height={50}/></td><td><button onClick={()=> this.dataDelete(value._id)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
+                                })
+                            }
+                            <tr>
+                                <td colSpan={6}>
+                                    {pages}
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <Footer/>
             </div>
-            )
+        )
     }
 }
 const mapStateToProps=(state)=>{

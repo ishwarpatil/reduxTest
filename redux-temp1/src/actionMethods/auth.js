@@ -42,8 +42,8 @@ export const task = (info) => {
     }
 };
 
-export const formData = (info) => {
-    //debugger;
+export const userData = (info) => {
+    debugger;
     return (dispatch) => {
         axios.post('http://localhost:8080/insert', info).then((data) => {
             dispatch({

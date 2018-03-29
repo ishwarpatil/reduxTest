@@ -1,10 +1,10 @@
-var express = require('express');
-var app = express();
+let express = require('express');
+let app = express();
 
-var mongoose = require('mongoose');
-var url = "mongodb://localhost:27017/newWork";
+let mongoose = require('mongoose');
+let url = "mongodb://localhost:27017/newWork";
 
-var bodyparser = require('body-parser');
+let bodyparser = require('body-parser');
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: true}));
 app.use((req,res,next)=>{
@@ -12,7 +12,15 @@ app.use((req,res,next)=>{
     next();
 });
 
-var depts = mongoose.Schema({
+// File Uploading Method
+let expUpload=require('express-fileupload');
+app.use(expUpload());
+app.use(express.static(__dirname+'/'));
+app.get('/',(req,res)=>{
+    res.sendFile(__dirname+'/')
+});
+
+let depts = mongoose.Schema({
     name: {
         type: String,
         default:''
@@ -29,26 +37,42 @@ var depts = mongoose.Schema({
         type: String,
         default:''
     },
+    fileName: {
+        type: String,
+        default:''
+    },
     flag: {
         type: String,
         default:false
     }
 });
 
-var citys = mongoose.Schema({
+let citys = mongoose.Schema({
     citys: {
         type: String,
     }
 });
 
-var dept = mongoose.model('dept', depts);
+let dept = mongoose.model('dept', depts);
 
-var city = mongoose.model('city', citys);
+let city = mongoose.model('city', citys);
 
 //for department
 app.post('/insert', (req, res) => {
-    let newdept = new dept(req.body);
-    newdept.save().then((data) => {
+    console.log(req.body)
+
+    console.log("File Name :- ",req.files.fileName);
+    let sampleFile=req.files.fileName;
+    sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
+    let newProject=new dept({
+        name:req.body.name,
+        email:req.body.email,
+        hobby:req.body.hobby,
+        city:req.body.city,
+        fileName:sampleFile.name,
+    });
+    // let newdept = new dept(req.body);
+    newProject.save().then((data) => {
         console.log("1 Record Inserted...");
         }).catch((err) => {
             res.send(err);
@@ -82,7 +106,7 @@ app.get('/display/city', (req, res) => {
 });
 
 // app.delete('/delete/:id',(req,res) => {
-//     var id = req.params.id;
+//     let id = req.params.id;
 //     dept.findOneAndRemove({_id:id}).then((result) => {
 //         res.send();
 //         console.log("1 deleted record...");
@@ -108,13 +132,13 @@ app.post('/delete', (req, res) => {
 });
 
 app.post('/update', (req, res) => {
-    var id = req.body.id;
-    var name = req.body.name;
-    var email = req.body.email;
-    var hobby = req.body.hobby;
-    var city = req.body.city;
-    var myquery = {_id: id};
-    var newquery = {$set: {name: name,email:email,hobby:hobby,city:city}};
+    let id = req.body.id;
+    let name = req.body.name;
+    let email = req.body.email;
+    let hobby = req.body.hobby;
+    let city = req.body.city;
+    let myquery = {_id: id};
+    let newquery = {$set: {name: name,email:email,hobby:hobby,city:city}};
     dept.findOneAndUpdate(myquery, newquery).then((result) => {
         res.send("1 updated record...");
     }, (err) => {
