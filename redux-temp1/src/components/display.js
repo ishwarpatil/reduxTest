@@ -14,6 +14,8 @@ class Display extends React.Component{
         this.state = {
             id:'',
             isEditing: false,
+            fileNameDum:[],
+            fileName:[],
             userValues: {
                 _id:'',
                 name: '',
@@ -25,6 +27,16 @@ class Display extends React.Component{
             searchArr:[]
         }
     }
+
+    handleFileChange=(e)=>{
+        let Arr=[];
+        for(let i=0;i<e.target.files.length;i++){
+            Arr.push(e.target.files[i]);
+        }
+        this.setState({
+            fileName:Arr
+        })
+    };
 
     componentWillMount(){
         this.props.displayData();
@@ -49,7 +61,16 @@ class Display extends React.Component{
     formHandler = (e) => {
         debugger;
         e.preventDefault();
-        this.props.editData(this.state.userValues);
+        let Obj=new FormData();
+        Obj.append('id',this.state.userValues._id);
+        Obj.append('name',this.state.userValues.name);
+        Obj.append('email',this.state.userValues.email);
+        Obj.append('hobby',this.state.userValues.hobby);
+        Obj.append('city',this.state.userValues.city);
+        for(let i=0;i<this.state.fileName.length;i++){
+            Obj.append('fileName',this.state.fileName[i]);
+        }
+        this.props.editData(Obj);
     };
     changeHandler = (e) => {
         const {userValues} = this.state;
@@ -76,6 +97,7 @@ class Display extends React.Component{
         this.props.allData && this.props.allData.map((value, index) => {
             if(value._id===id){
                 this.setState({
+                    fileNameDum:value.fileName,
                     userValues:{
                         _id:value._id,
                         name: value.name,
@@ -164,7 +186,7 @@ class Display extends React.Component{
                             <div className="modal-content">
                                 <div className="modal-body">
                                     <h2>Stacked form</h2>
-                                    <form onSubmit={this.formHandler}>
+                                    <form onSubmit={this.formHandler} encType="multipart/form-data">
                                         <div className="form-group">
                                             <label>Name:</label>
                                             <input type="hidden" className="form-control" value={this.state.userValues._id} name="_id"/>
@@ -196,6 +218,21 @@ class Display extends React.Component{
                                                     })
                                                 }
                                             </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Document:</label>
+                                            <input type="file" className="form-control" name="fileName" multiple="multiple" onChange={this.handleFileChange}/>
+                                        </div>
+                                        <div>
+                                            <table>
+                                                <tr>
+                                                    {
+                                                        this.state.fileNameDum.map((v,i)=>{
+                                                            return <td><img src={"http://localhost:8080/upload/"+v} width={50} height={50}/></td>
+                                                        })
+                                                    }
+                                                </tr>
+                                            </table>
                                         </div>
                                         <button type="submit" className="btn btn-primary" onClick={this.toggle}>Update</button>
                                     </form>
@@ -241,7 +278,13 @@ class Display extends React.Component{
                             <tbody>
                             {
                                 Recodes.map((value, index) => {
-                                    return <tr key={index}><td>{value.name}</td><td>{value.email}</td><td>{value.hobby}</td><td>{value.city}</td><td><img src={"http://localhost:8080/upload/"+value.fileName} width={50} height={50}/></td><td><button onClick={()=> this.dataDelete(value._id)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
+                                    return <tr key={index}><td>{value.name}</td><td>{value.email}</td><td>{value.hobby}</td><td>{value.city}</td><td>
+                                            {
+                                                value.fileName.map((v,i)=>{
+                                                    return <img src={"http://localhost:8080/upload/"+v} width={50} height={50}/>
+                                                })
+                                            }
+                                    </td><td><button onClick={()=> this.dataDelete(value._id)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
                                 })
                             }
                             <tr>

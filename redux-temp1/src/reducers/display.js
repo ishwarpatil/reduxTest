@@ -13,7 +13,7 @@ export default (state=initialState,action)=>{
     switch (action.type){
         case DISPLAY:
             const {allData} = state;
-            debugger
+            debugger;
             return {
                 ...state,
                 allData:action.payload
@@ -28,7 +28,7 @@ export default (state=initialState,action)=>{
             debugger;
             const editdata = state.allData;
             const findid = action.payload;
-            const indexfind = _.findIndex(editdata, { '_id': findid._id});
+            const indexfind = _.findIndex(editdata, { '_id': findid.id});
             editdata[indexfind] = findid;
             return { ...state,allData:_.cloneDeep(editdata)};
         case 'SORT':

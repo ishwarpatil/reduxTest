@@ -46,6 +46,7 @@ export const userData = (info) => {
     debugger;
     return (dispatch) => {
         axios.post('http://localhost:8080/insert', info).then((data) => {
+            console.log("My Info :-",info);
             dispatch({
                 type: FORM,
                 payload: info
@@ -104,6 +105,7 @@ export const editData = (info) => {
     debugger;
     return (dispatch) => {
         axios.post('http://localhost:8080/update',info).then((result) => {
+            console.log("My state :-",info);
             dispatch({
                 type: EDIT,
                 payload: info

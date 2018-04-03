@@ -38,7 +38,7 @@ let depts = mongoose.Schema({
         default:''
     },
     fileName: {
-        type: String,
+        type: Array,
         default:''
     },
     flag: {
@@ -59,17 +59,22 @@ let city = mongoose.model('city', citys);
 
 //for department
 app.post('/insert', (req, res) => {
-    console.log(req.body)
 
-    console.log("File Name :- ",req.files.fileName);
+    //console.log("Files : -",req.files.fileName);
+
+    let Arr=[];
     let sampleFile=req.files.fileName;
-    sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
+    for(let i=0;i<sampleFile.length;i++){
+        sampleFile[i].mv(__dirname+'/upload/'+sampleFile[i].name);
+        Arr.push(sampleFile[i].name);
+    }
+    //console.log(Arr);
     let newProject=new dept({
         name:req.body.name,
         email:req.body.email,
         hobby:req.body.hobby,
         city:req.body.city,
-        fileName:sampleFile.name,
+        fileName:Arr,
     });
     // let newdept = new dept(req.body);
     newProject.save().then((data) => {
@@ -77,7 +82,8 @@ app.post('/insert', (req, res) => {
         }).catch((err) => {
             res.send(err);
         });
-});
+})
+;
 
 app.get('/display', (req, res) => {
     dept.find({ flag:'false'}).then((result) => {
@@ -132,18 +138,41 @@ app.post('/delete', (req, res) => {
 });
 
 app.post('/update', (req, res) => {
-    let id = req.body.id;
-    let name = req.body.name;
-    let email = req.body.email;
-    let hobby = req.body.hobby;
-    let city = req.body.city;
-    let myquery = {_id: id};
-    let newquery = {$set: {name: name,email:email,hobby:hobby,city:city}};
-    dept.findOneAndUpdate(myquery, newquery).then((result) => {
-        res.send("1 updated record...");
-    }, (err) => {
-        console.log(err);
-    });
+
+    if(req.files===null){
+        let id = req.body.id;
+        let name = req.body.name;
+        let email = req.body.email;
+        let hobby = req.body.hobby;
+        let city = req.body.city;
+        let myquery = {_id: id};
+        let newquery = {$set: {name: name,email:email,hobby:hobby,city:city}};
+        dept.findOneAndUpdate(myquery, newquery).then((result) => {
+            console.log("1 updated record...");
+        }, (err) => {
+            console.log(err);
+        });
+    }else{
+        let ArrUpdate=[];
+        let sampleFileUpdate=req.files.fileName;
+        for(let i=0;i<sampleFileUpdate.length;i++){
+            sampleFileUpdate[i].mv(__dirname+'/upload/'+sampleFileUpdate[i].name);
+            ArrUpdate.push(sampleFileUpdate[i].name);
+        }
+        let id = req.body.id;
+        let name = req.body.name;
+        let email = req.body.email;
+        let hobby = req.body.hobby;
+        let city = req.body.city;
+        let myquery = {_id: id};
+        let newquery = {$set: {name: name,email:email,hobby:hobby,city:city,fileName:ArrUpdate}};
+        dept.findOneAndUpdate(myquery, newquery).then((result) => {
+            console.log("1 updated record...");
+        }, (err) => {
+            console.log(err);
+        });
+    }
+
 });
 
 app.listen(8080, () => {

@@ -11,15 +11,25 @@ class Form extends React.Component {
     constructor() {
         super();
         this.state = {
+            fileName:[],
             userValues: {
                 name: '',
                 email: '',
                 hobby: [],
                 city: '',
-                fileName:''
             }
         }
     }
+
+    handleFileChange=(e)=>{
+        let Arr=[];
+        for(let i=0;i<e.target.files.length;i++){
+            Arr.push(e.target.files[i]);
+        }
+       this.setState({
+           fileName:Arr
+       })
+    };
 
     componentWillMount() {
         this.props.allCity();
@@ -32,13 +42,16 @@ class Form extends React.Component {
 
     formHandler = (e) => {
         e.preventDefault();
+        console.log("fsdfsdf",this.state.fileName);
         let Obj=new FormData();
         Obj.append('name',this.state.userValues.name);
         Obj.append('email',this.state.userValues.email);
         Obj.append('hobby',this.state.userValues.hobby);
         Obj.append('city',this.state.userValues.city);
-        Obj.append('fileName',this.state.fileName);
-        console.log(this.state);
+        for(let i=0;i<this.state.fileName.length;i++){
+            Obj.append('fileName',this.state.fileName[i]);
+        }
+        console.log("My State :- ",this.state);
         this.props.userData(Obj);
     };
     changeHandler = (e) => {
@@ -55,8 +68,7 @@ class Form extends React.Component {
     };
 
     render() {
-        debugger;
-        return (
+        return (    
             <div>
                 <Header/>
                 <div className="row content">
@@ -97,7 +109,7 @@ class Form extends React.Component {
                                     <div className="form-group">
 
                                         <label>Document:</label>
-                                        <input type="file" className="form-control" name="fileName" multiple="multiple" onChange={(e)=>{ this.setState({fileName:e.target.files[0]}) }}/>
+                                        <input type="file" className="form-control" name="fileName" multiple="multiple" onChange={this.handleFileChange}/>
                                     </div>
                                     <button type="submit" className="btn btn-primary">Submit</button>
                                 </form>
@@ -111,7 +123,7 @@ class Form extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state) =>{
     return {
         allCitys: state.city.allCity
     }
