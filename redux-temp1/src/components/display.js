@@ -13,6 +13,7 @@ class Display extends React.Component{
         super();
         this.state = {
             id:'',
+            deleteFiles:[],
             isEditing: false,
             fileNameDum:[],
             fileName:[],
@@ -46,13 +47,14 @@ class Display extends React.Component{
 
     initial = () => {
         debugger;
-        this.props.deleteData(this.state.id);
+        this.props.deleteData(this.state.id,this.state.deleteFiles);
     };
 
-    dataDelete = (data) =>{
+    dataDelete = (data,files) =>{
         debugger;
         this.setState({
-            id:data
+            id:data,
+            deleteFiles:files
         },()=>{
             this.initial();
         });
@@ -284,7 +286,7 @@ class Display extends React.Component{
                                                     return <img src={"http://localhost:8080/upload/"+v} width={50} height={50}/>
                                                 })
                                             }
-                                    </td><td><button onClick={()=> this.dataDelete(value._id)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
+                                    </td><td><button onClick={()=> this.dataDelete(value._id,value.fileName)} className="btn btn-danger">Detete</button></td><td><button className="btn btn-primary" data-toggle="modal" data-target="#myModal" onClick={()=> this.dataEdit(value._id)}>Edit</button></td></tr>
                                 })
                             }
                             <tr>

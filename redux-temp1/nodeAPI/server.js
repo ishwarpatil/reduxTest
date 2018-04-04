@@ -13,6 +13,7 @@ app.use((req,res,next)=>{
 });
 
 // File Uploading Method
+let fs = require('fs');
 let expUpload=require('express-fileupload');
 app.use(expUpload());
 app.use(express.static(__dirname+'/'));
@@ -121,8 +122,12 @@ app.get('/display/city', (req, res) => {
 //     });
 // });
 
-app.post('/delete', (req, res) => {
-    let id = req.body.info;
+app.post('/delete/:id', (req, res) => {
+    let id = req.params.id;
+    console.log(id);
+    for(let i=0;i<req.body.length;i++){
+        fs.unlinkSync(__dirname+'/upload/'+req.body[i]);
+    }
     let myquery = {_id: id};
     dept.findById(myquery).then((data) => {
         data.flag = true;

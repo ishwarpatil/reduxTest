@@ -87,13 +87,13 @@ export const allCity = (info) => {
     }
 };
 
-export const deleteData = (info) => {
-   // debugger;
+export const deleteData = (id,deleteFiles) => {
+    debugger;
     return (dispatch) => {
-        axios.post('http://localhost:8080/delete',{info}).then((result) => {
+        axios.post(`http://localhost:8080/delete/${id}`,deleteFiles).then((result) => {
             dispatch({
                 type: DELETE,
-                payload: info
+                payload: id
             })
         }).catch((err) => {
             console.log(err);
