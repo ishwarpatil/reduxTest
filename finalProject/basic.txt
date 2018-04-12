@@ -1,0 +1,215 @@
+//  Index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import allReducers from './reducer'
+import {createStore, applyMiddleware} from 'redux';
+import {composeWithDevTools} from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
+import {Provider} from 'react-redux';
+import {ConnectedRouter, routerMiddleware} from 'react-router-redux';
+import createHistory from 'history/createBrowserHistory';
+
+const history = createHistory();
+let store = createStore(allReducers, composeWithDevTools(), applyMiddleware(thunk, routerMiddleware(history)));
+ReactDOM.render(
+    <Provider store={store}>
+        <ConnectedRouter history={history}>
+            <App/>
+        </ConnectedRouter>
+    </Provider>, document.getElementById('root'));
+
+
+//  App.js
+import React, { Component } from 'react';
+import './App.css';
+import {Route,Switch,Redirect} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import Login from './component/login';
+import Home from './component/home';
+import About from './component/about';
+import Contact from './component/contact';
+class App extends Component {
+    render() {
+        const PrivateRoute=({component:Component,...rest})=>{
+            return (
+                <Route {...rest} render={(routeProps)=>(
+                    this.props.userData ?
+                        <Component {...routeProps}/>:<Redirect to='/login'/>)}/>
+
+            )
+        };
+        const PublicRoute=({component:Component,...rest})=>{
+            return (
+                <Route {...rest} render={(routeProps)=>(
+                    ! this.props.userData ?
+                        <Component {...routeProps}/>:
+                        (this.props.userData.msg==="fail")?<Component {...routeProps}/>:<Redirect to="/"/>
+                )}/>
+            )
+        };
+        return (
+            <Switch>
+                <div className="App">
+                    <PublicRoute path="/login" component={Login}/>
+                    <PrivateRoute exact path="/" component={Home}/>
+                    <PrivateRoute exact path="/About" component={About}/>
+                    <PrivateRoute exact path="/Contact" component={Contact}/>
+                </div>
+            </Switch>
+        );
+    }
+}
+
+const mapStateToProps=(state)=>{return{
+    userData:state.login.user
+}};
+
+export default withRouter(connect(mapStateToProps,null)(App));
+
+
+// Component.js
+import React from 'react';
+import { Form,FormGroup,Button,Col,ControlLabel,FormControl } from 'react-bootstrap';
+import {loginUser} from './../actions/auth';
+import {bindActionCreators} from 'redux';
+import { connect} from 'react-redux';
+class Login extends React.Component{
+    constructor(){
+        super();
+        this.state = {
+            userValues:{
+                username:'',
+                password:''
+            }
+        }
+    }
+    componentDidMount(){
+        if(this.props.userData!==null && this.props.userData!==undefined)
+        {
+            if(this.props.userData.msg)
+                if(this.props.userData.msg==="fail")
+                    alert('UserName or Password invalid');
+        }
+    }
+    componentWillReceiveProps(nextProps){
+        this.setState({a:'a'});
+    }
+    loginHandler=()=>{
+        debugger;
+        this.props.loginUser(this.state.userValues);
+    };
+    changeHandler=(e)=>{
+        const {userValues}=this.state;
+        userValues[e.target.name]=e.target.value;
+        this.setState({userValues});
+    };
+    render(){
+        return (
+            <div style={{'margin':'0 auto'}}>
+                <fieldset>
+                    <legend>Login</legend>
+                    <center>
+                        <Form horizontal style={{'width':'20%'}}>
+                            <FormGroup controlId="formHorizontalEmail">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    User Name
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="email" name="username" onChange={this.changeHandler} placeholder="Email" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="formHorizontalPassword">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Password
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="password" name="password" onChange={this.changeHandler} placeholder="Password" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col smOffset={2} sm={10}>
+                                    <Button onClick={this.loginHandler}>Sign in</Button>
+                                </Col>
+                            </FormGroup>
+                        </Form>
+                    </center>
+                </fieldset>
+            </div>
+        )
+    }
+}
+const mapStateToProps=(state)=>{return{
+    userData:state.login.user
+}};
+const mapDispatchToProps=(dispatch)=>bindActionCreators({loginUser},dispatch);
+export default connect(mapStateToProps,mapDispatchToProps)(Login);
+
+
+// Action.js
+import {LOGIN, LOGOUT} from './../reducer/login-reducer';
+import axios from 'axios';
+export const loginUser = (info) => {
+    debugger;
+    return (dispatch) => {
+        axios.post('http://localhost:8010/api/login', info).then((result) => {
+            if(result.data.msg==="success"){
+                localStorage.setItem('userEmail',info.email);
+            }
+            dispatch({
+                type: LOGIN,
+                payload: result.data
+            })
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+};
+export const logoutUser = () => {
+    return (dispatch) => {
+        localStorage.clear();
+        dispatch({
+            type: LOGOUT,
+            });
+    }
+};
+
+
+// Reducer.js
+import _ from 'lodash';
+export const LOGIN='login';
+export const LOGOUT='logout';
+const initialState={
+    user:localStorage.getItem('userEmail') || null
+};
+
+export default (state=initialState,action)=>{
+    switch (action.type){
+        case LOGIN:
+            debugger;
+            return {...state,user:action.payload};
+        case LOGOUT:
+            return {...state,user:action.payload};
+        case AGENTINFO:
+            const data = state.agentdata;
+            data.push(action.payload);
+            return { ...state,agentdata:_.cloneDeep(data)};
+        case AGENTDATA:
+            return { ...state,agentdata:_.cloneDeep(action.payload)};
+        case AGENTDELETE:
+            const delAgent = state.agentdata;
+            const index = _.findIndex(delAgent, { 'agentId': action.payload});
+            delAgent.splice(index,1);
+            return { ...state,agentdata:_.cloneDeep(delAgent)};
+        case AGENTUPDATE:
+            const updateAgent = state.agentdata;
+            const findid = action.payload;
+            const indexfind = _.findIndex(updateAgent, {'agentId': findid.agentId});
+            updateAgent[indexfind] = findid;
+            return { ...state,agentdata:_.cloneDeep(updateAgent)};
+        default:
+            return state;
+    }
+}
