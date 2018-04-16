@@ -9,6 +9,7 @@ import About from './component/about';
 import Contact from './component/contact';
 import Dashboard from './component/dashboard';
 import Addemp from './component/addEmp';
+import Getemp from './component/getEmp';
 
 class App extends Component {
     render() {
@@ -41,6 +42,7 @@ class App extends Component {
                     <PrivateRoute exact path="/About" component={About}/>
                     <PrivateRoute exact path="/Contact" component={Contact}/>
                     <PrivateRoute exact path="/addEmp" component={Addemp}/>
+                    <PrivateRoute exact path="/getEmp" component={Getemp}/>
                 </div>
             </Switch>
         );

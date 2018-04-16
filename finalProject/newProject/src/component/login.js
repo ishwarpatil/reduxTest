@@ -34,6 +34,7 @@ class Login extends React.Component{
     };
 
     componentDidMount(){
+        console.log("Ok :-",this.props.userData);
         if(this.props.userData!==null && this.props.userData!==undefined)
         {
             if(this.props.userData.msg)
@@ -43,10 +44,10 @@ class Login extends React.Component{
     };
     loginHandler=()=>{
         debugger;
-        this.props.loginUser(this.state.userValues);
+        this.props.LoginUser(this.state.userValues);
     };
     handlerAgentInfo=()=> {
-        this.props.addUser(this.state.addUserValues);
+        this.props.AddUser(this.state.addUserValues);
         this.setState({
             isActive:false
         })
@@ -98,8 +99,6 @@ class Login extends React.Component{
                         show={this.state.isActive}
                         onHide={()=>{
                             this.toggleActive();
-                            this.state.isEditing?
-                                this.setState({isEditing:false}):''
                         }}
                         container={this}
                         aria-labelledby="contained-modal-title">
@@ -160,8 +159,6 @@ class Login extends React.Component{
                         <Modal.Footer>
                             <Button onClick={()=>{
                                 this.toggleActive();
-                                this.state.isEditing?
-                                    this.setState({isEditing:false}):''
                             }}>Close</Button>
                         </Modal.Footer>
                     </Modal>
@@ -172,8 +169,11 @@ class Login extends React.Component{
 }
 
 const mapStateToProps=(state)=>{return{
-    userData:state.login.user
+    userData:state.login.user,
 }};
 
-const mapDispatchToProps=(dispatch)=>bindActionCreators({loginUser,addUser},dispatch);
+const mapDispatchToProps=(dispatch)=>{return{
+    LoginUser: (info) => {dispatch({type: 'LOGINUSER',payload:info})},
+    AddUser: (info) => {dispatch({type: 'SAGAADDUSER',payload:info})},
+}};
 export default connect(mapStateToProps,mapDispatchToProps)(Login);

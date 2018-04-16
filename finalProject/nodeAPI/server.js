@@ -11,6 +11,14 @@ let passport = require('passport');
 let LocalStrategy = require('passport-local').Strategy;
 app.use(passport.initialize());
 
+let fs = require('fs');
+let expUpload=require('express-fileupload');
+app.use(expUpload());
+app.use(express.static(__dirname+'/'));
+app.get('/',(req,res)=>{
+    res.sendFile(__dirname+'/')
+});
+
 let con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -65,9 +73,10 @@ con.connect(function (err) {
     });
 
     // app.post('/api/login', (req, res) => {
-    //     let email = req.body.email;
+    //     let email = req.body.username;
     //     let password = req.body.password;
-    //     let sql = "select * from users where email='"+ email +"' and password='"+ password +"'";
+    //     let sql = "select * from signup where email='"+ email +"' and password='"+ password +"'";
+    //     console.log(sql);
     //     con.query(sql, (err, result) => {
     //         if (err) throw err;
     //         if(result[0]!==undefined){
@@ -87,8 +96,8 @@ con.connect(function (err) {
         });
     });
 
-    app.get('/api/city', (req, res) => {
-        let sid = req.body.sid;
+    app.get('/api/city/:sid', (req, res) => {
+        let sid = req.params.sid;
         let sql = "select * from city where sid="+sid;
         con.query(sql, (err, result) => {
             if (err) throw err;
@@ -98,45 +107,75 @@ con.connect(function (err) {
 
 
     //student
-    app.post('/api/student', (req, res) => {
-        let name = req.body.name;
-        let email = req.body.email;
+    app.post('/api/employee', (req, res) => {
+        //console.log(req.body.hobby);
+        let firstName = req.body.firstName;
+        let lastName = req.body.lastName;
+        let gender = req.body.gender;
+        let hobby = req.body.hobby;
+        let sid = req.body.sid;
         let city = req.body.city;
-        let sql = "INSERT INTO student (name,email,city) VALUES ('" + name + "','" + email + "','" + city + "')";
+        let sampleFile=req.files.profilePhoto;
+        sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
+        let sql = "INSERT INTO emp (firstName,lastName,gender,hobby,sid,city,profilePhoto) VALUES ('" + firstName + "','" + lastName + "','" + gender + "','" + hobby + "','" + sid + "','" + city + "','" + sampleFile.name + "')";
         con.query(sql, (err, result) => {
             if (err) throw err;
             res.send("1 Record Inserted");
         });
     });
 
-    // app.get('/api/student', (req, res) => {
-    //     let sql = "select * from student where display='' ";
-    //     con.query(sql, (err, result, fields) => {
-    //         if (err) throw err;
-    //         res.send(result);
-    //     });
-    // });
-    //
-    // app.delete('/api/student/:id', (req, res) => {
-    //     let id = req.params.id;
-    //     let sql = "update student,marks set student.display='no',marks.display='no' where student.id = " + id;
-    //     con.query(sql, (err, result) => {
-    //         if (err) throw err;
-    //         res.send("1 Record Delete");
-    //     });
-    // });
-    //
-    // app.put('/api/student/:id', (req, res) => {
-    //     let id = req.params.id;
-    //     let name = req.body.name;
-    //     let email = req.body.email;
-    //     let city = req.body.city;
-    //     let sql = "update student set name='" + name + "',email='"+ email +"',city='" + city + "' where id = " + id;
-    //     con.query(sql, (err, result) => {
-    //         if (err) throw err;
-    //         res.send("1 Record Updated");
-    //     });
-    // });
+    app.get('/api/employee', (req, res) => {
+        let sql = "SELECT emp.id,emp.firstName,emp.lastName,emp.gender,emp.hobby,state.state,emp.sid,emp.city,emp.profilePhoto\n" +
+            "FROM emp\n" +
+            "INNER JOIN state ON emp.sid = state.sid where emp.flag=0;\n";
+        con.query(sql, (err, result, fields) => {
+            if (err) throw err;
+            res.send(result);
+        });
+    });
+
+    app.delete('/api/employee/:id', (req, res) => {
+        let id = req.params.id;
+        let sql = "update emp set flag=1 where id = " + id;
+        con.query(sql, (err, result) => {
+            if (err) throw err;
+            res.send("1 Record Delete");
+        });
+    });
+
+    app.put('/api/employee/:id', (req, res) => {
+        if(req.files===null){
+            let id = req.params.id;
+            let firstName = req.body.firstName;
+            let lastName = req.body.lastName;
+            let gender = req.body.gender;
+            let hobby = req.body.hobby;
+            let sid = req.body.sid;
+            let city = req.body.city;
+            let sql = "update emp set firstName='" + firstName + "',lastName='"+ lastName +"',gender='" + gender + "',hobby='" + hobby + "',sid='" + sid + "',city='" + city + "' where id = " + id;
+            con.query(sql, (err, result) => {
+                if (err) throw err;
+                res.send("1 Record Updated");
+            });
+        }
+        else{
+            let id = req.params.id;
+            let firstName = req.body.firstName;
+            let lastName = req.body.lastName;
+            let gender = req.body.gender;
+            let hobby = req.body.hobby;
+            let sid = req.body.sid;
+            let city = req.body.city;
+            let sampleFile=req.files.profilePhoto;
+            sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
+            let sql = "update emp set firstName='" + firstName + "',lastName='"+ lastName +"',gender='" + gender + "',hobby='" + hobby + "',sid='" + sid + "',city='" + city + "',profilePhoto='" + sampleFile.name + "' where id = " + id;
+            con.query(sql, (err, result) => {
+                if (err) throw err;
+                res.send("1 Record Updated");
+            });
+        }
+
+    });
 
 });
 

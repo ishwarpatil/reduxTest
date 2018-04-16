@@ -22,7 +22,7 @@ class Home extends React.Component{
     };
 
     logoutHandle = () =>{
-        this.props.logoutUser();
+        this.props.LogoutUser();
     };
 
     render(){
@@ -40,9 +40,9 @@ class Home extends React.Component{
 const mapStateToProps=(state)=>{return{
 }};
 
-const mapDispatchToProps=(dispatch)=>bindActionCreators({
-    logoutUser,
+const mapDispatchToProps=(dispatch)=>{return{
+    LogoutUser: () => {dispatch({type: 'LOGOUTUSER'})},
     goToContact: () => push('/contact'),
     goToAbout: () => push('/about')
-},dispatch);
+}};
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Home));

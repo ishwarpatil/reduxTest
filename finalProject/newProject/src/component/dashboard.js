@@ -16,7 +16,7 @@ class Dashboard extends  React.Component{
         return(
             <div>
                 <AppBar
-                    title="Admin Panel"
+                    title="Inventory Management For Sophio Automotive E-Commerce"
                     iconClassNameRight="muidocs-icon-navigation-expand-more"
                     onLeftIconButtonClick={this.handleToggle}
                 />
@@ -30,7 +30,7 @@ class Dashboard extends  React.Component{
                         }}/>
                     <NavLink to="/"><MenuItem>DashBoard</MenuItem></NavLink>
                     <NavLink to="/addEmp"><MenuItem>Add Employees</MenuItem></NavLink>
-                    <MenuItem>Employees</MenuItem>
+                    <NavLink to="/getEmp"><MenuItem>Employees</MenuItem></NavLink>
                 </Drawer>
             </div>
         )
