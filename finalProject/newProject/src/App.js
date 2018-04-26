@@ -3,17 +3,20 @@ import './App.css';
 import {Route,Switch,Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import Login from './component/login';
+import Login from './loginComponent/login';
 import Home from './component/home';
 import About from './component/about';
 import Contact from './component/contact';
 import Dashboard from './component/dashboard';
 import Addemp from './component/addEmp';
 import Getemp from './component/getEmp';
+import View from './component/view';
+import AddToCard from './component/addToCard';
+import SimpleForm from './component/MaterialUiForm';
+import Checkout from './checkout/form';
 
-class App extends Component {
+export class App extends Component {
     render() {
-
         const PrivateRoute=({component:Component,...rest})=>{
             return (
                 <Route {...rest} render={(routeProps)=>(
@@ -43,6 +46,10 @@ class App extends Component {
                     <PrivateRoute exact path="/Contact" component={Contact}/>
                     <PrivateRoute exact path="/addEmp" component={Addemp}/>
                     <PrivateRoute exact path="/getEmp" component={Getemp}/>
+                    <PrivateRoute exact path="/view" component={View}/>
+                    <PrivateRoute exact path="/addToCard" component={AddToCard}/>
+                    <PrivateRoute exact path="/MaterialUiForm" component={SimpleForm}/>
+                    <PrivateRoute exact path="/form" component={Checkout}/>
                 </div>
             </Switch>
         );

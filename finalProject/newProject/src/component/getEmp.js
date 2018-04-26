@@ -3,7 +3,9 @@ import { Button } from 'react-bootstrap';
 import {getEmployee,deleteEmployee} from './../actions/auth';
 import {bindActionCreators} from 'redux';
 import { connect} from 'react-redux';
+import {Modal,Grid,Row} from 'react-bootstrap';
 import AddEmp from './addEmp';
+import View from './view';
 import {
     Table,
     TableBody,
@@ -18,9 +20,14 @@ import RaisedButton from 'material-ui/RaisedButton';
 class GetEmp extends React.Component{
     constructor(){
         super();
+
+        this.handleHide = this.handleHide.bind(this);
+
         this.state = {
+            show: false,
             isActive:false,
             editData:[],
+            viewId:'',
             id:'',
             stateId:'',
             city:'',
@@ -44,6 +51,10 @@ class GetEmp extends React.Component{
         }
     }
 
+    handleHide() {
+        this.setState({ show: false });
+    }
+
     componentWillReceiveProps(nextProps){
         this.setState({a:'a'});
     };
@@ -57,11 +68,13 @@ class GetEmp extends React.Component{
             isActive:!this.state.isActive,
         });
     };
+
     closeModal=()=>{
         this.setState({
-            isActive:false
+            isActive:false,
+            editData:[],
         })
-    }
+    };
 
     initial = () => {
         this.props.deleteEmployee(this.state.id);
@@ -75,28 +88,16 @@ class GetEmp extends React.Component{
         })
     };
 
-    // editEmp = (empId) => {
-    //   this.props.Employees.map((row, index)=>{
-    //       if(row.id===empId){
-    //           this.setState({
-    //               stateId:row.state,
-    //               city:row.city,
-    //               addEmp:{
-    //                   firstName:row.firstName,
-    //                   lastName:row.lastName,
-    //                   gender:row.gender,
-    //                   hobby:row.hobby,
-    //               },
-    //           })
-    //       }
-    //   });
-    // };
+    viewData = (id) => {
+      this.setState({
+         viewId:id,
+      });
+    };
 
     render(){
         return (
             <div>
                 <Button onClick={()=>{this.toggleActive()}}>Add Employees</Button>
-
                 <Table
                     height={this.state.height}
                     fixedHeader={this.state.fixedHeader}
@@ -104,11 +105,7 @@ class GetEmp extends React.Component{
                     selectable={this.state.selectable}
                     multiSelectable={this.state.multiSelectable}
                 >
-                    <TableHeader
-                        displaySelectAll={this.state.showCheckboxes}
-                        adjustForCheckbox={this.state.showCheckboxes}
-                        enableSelectAll={this.state.enableSelectAll}
-                    >
+                    <TableHeader>
                         <TableRow>
                             <TableHeaderColumn colSpan="12" tooltip="Super Header" style={{textAlign: 'center'}}>
                                 <h1>Employees</h1>
@@ -116,23 +113,16 @@ class GetEmp extends React.Component{
                         </TableRow>
                         <TableRow>
                             <TableHeaderColumn tooltip="The Index">#</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The First Name" style={{'paddingLeft':'50px'}}>First Name</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Last Name" style={{'paddingLeft':'75px'}}>Last Name</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Gender" style={{'paddingLeft':'100px'}}>Gender</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Hobby" style={{'paddingLeft':'128px'}}>Hobby</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The State" style={{'paddingLeft':'154px'}}>State</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The City" style={{'paddingLeft':'179px'}}>City</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The profilePhoto" style={{'paddingLeft':'205px'}}>Profile Photo</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Edit" style={{'paddingLeft':'233px'}}>Edit</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'255px'}}>Delete</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The First Name" style={{'paddingLeft':'5%'}}>First Name</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Last Name" style={{'paddingLeft':'9%'}}>Last Name</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Gender" style={{'paddingLeft':'13%'}}>Gender</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The City" style={{'paddingLeft':'17%'}}>City</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Edit" style={{'paddingLeft':'23%'}}>Edit</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'26%'}}>Delete</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'30%'}}>View</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
-                    <TableBody
-                        displayRowCheckbox={this.state.showCheckboxes}
-                        deselectOnClickaway={this.state.deselectOnClickaway}
-                        showRowHover={this.state.showRowHover}
-                        stripedRows={this.state.stripedRows}
-                    >
+                    <TableBody>
                         {
                             this.props.Employees.map( (row, index) => {
                                 return <TableRow key={index}>
@@ -140,30 +130,24 @@ class GetEmp extends React.Component{
                                             <TableRowColumn>{row.firstName}</TableRowColumn>
                                             <TableRowColumn>{row.lastName}</TableRowColumn>
                                             <TableRowColumn>{row.gender}</TableRowColumn>
-                                            <TableRowColumn>{row.hobby}</TableRowColumn>
-                                            <TableRowColumn>{row.state}</TableRowColumn>
                                             <TableRowColumn>{row.city}</TableRowColumn>
-                                            <TableRowColumn><img src={"http://localhost:8010/upload/"+row.profilePhoto} width={50} height={50} /></TableRowColumn>
-                                            <TableRowColumn><RaisedButton label="Edit" primary={true} onClick={()=>{this.setState({editData:row,});this.toggleActive();}} /></TableRowColumn>
+                                            <TableRowColumn><RaisedButton label="Edit" primary={true} onClick={()=>{this.setState({editData:row});this.toggleActive();}} /></TableRowColumn>
                                             <TableRowColumn><RaisedButton label="Delete" secondary={true} onClick={()=>{this.deleteEmp(row.id)}}  /></TableRowColumn>
+                                            <TableRowColumn><RaisedButton label="View" primary={true} onClick={()=>{this.setState({editData:row});this.setState({show:true});}}  /></TableRowColumn>
                                         </TableRow>
                             })
                         }
                     </TableBody>
-                    <TableFooter
-                        adjustForCheckbox={this.state.showCheckboxes}
-                    >
+                    <TableFooter>
                         <TableRow>
                             <TableHeaderColumn tooltip="The Index">#</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The First Name" style={{'paddingLeft':'50px'}}>First Name</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Last Name" style={{'paddingLeft':'75px'}}>Last Name</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Gender" style={{'paddingLeft':'100px'}}>Gender</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Hobby" style={{'paddingLeft':'128px'}}>Hobby</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The State" style={{'paddingLeft':'154px'}}>State</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The City" style={{'paddingLeft':'179px'}}>City</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The profilePhoto" style={{'paddingLeft':'205px'}}>Profile Photo</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Edit" style={{'paddingLeft':'233px'}}>Edit</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'255px'}}>Delete</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The First Name" style={{'paddingLeft':'5%'}}>First Name</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Last Name" style={{'paddingLeft':'9%'}}>Last Name</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Gender" style={{'paddingLeft':'13%'}}>Gender</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The City" style={{'paddingLeft':'17%'}}>City</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Edit" style={{'paddingLeft':'23%'}}>Edit</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'26%'}}>Delete</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Delete" style={{'paddingLeft':'30%'}}>View</TableHeaderColumn>
                         </TableRow>
                         <TableRow>
                             <TableRowColumn colSpan="12" style={{textAlign: 'center'}}>
@@ -172,7 +156,9 @@ class GetEmp extends React.Component{
                         </TableRow>
                     </TableFooter>
                 </Table>
+
                 <AddEmp show={this.state.isActive} closeModal={this.closeModal} Edit={this.state.editData} />
+                <View show={this.state.show} closeModal={this.handleHide} Edit={this.state.editData} />
             </div>
         )
     }

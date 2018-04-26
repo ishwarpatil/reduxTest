@@ -1,7 +1,9 @@
 const mysql = require('mysql');
 const express = require('express');
+const stripe = require('stripe')('sk_test_m8SV7RrOmOmlulUapO164agU');
 const app = express();
 const bodyParser = require('body-parser');
+const hbs = require('hbs');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -18,6 +20,9 @@ app.use(express.static(__dirname+'/'));
 app.get('/',(req,res)=>{
     res.sendFile(__dirname+'/')
 });
+
+app.set('view engine','hbs');
+app.set('views',__dirname + '/views');
 
 let con = mysql.createConnection({
     host: "localhost",
@@ -109,6 +114,16 @@ con.connect(function (err) {
     //student
     app.post('/api/employee', (req, res) => {
         //console.log(req.body.hobby);
+        function guid() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            //return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+            return s4() + s4() + '-' + s4();
+        }
+        let uuid = guid();
         let firstName = req.body.firstName;
         let lastName = req.body.lastName;
         let gender = req.body.gender;
@@ -116,8 +131,8 @@ con.connect(function (err) {
         let sid = req.body.sid;
         let city = req.body.city;
         let sampleFile=req.files.profilePhoto;
-        sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
-        let sql = "INSERT INTO emp (firstName,lastName,gender,hobby,sid,city,profilePhoto) VALUES ('" + firstName + "','" + lastName + "','" + gender + "','" + hobby + "','" + sid + "','" + city + "','" + sampleFile.name + "')";
+        sampleFile.mv(__dirname+'/upload/'+ uuid.concat(sampleFile.name));
+        let sql = "INSERT INTO emp (firstName,lastName,gender,hobby,sid,city,profilePhoto) VALUES ('" + firstName + "','" + lastName + "','" + gender + "','" + hobby + "','" + sid + "','" + city + "','" + uuid.concat(sampleFile.name) + "')";
         con.query(sql, (err, result) => {
             if (err) throw err;
             res.send("1 Record Inserted");
@@ -159,6 +174,16 @@ con.connect(function (err) {
             });
         }
         else{
+            function guid() {
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                }
+                //return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+                return s4() + s4() + '-' + s4();
+            }
+            let uuid = guid();
             let id = req.params.id;
             let firstName = req.body.firstName;
             let lastName = req.body.lastName;
@@ -167,8 +192,8 @@ con.connect(function (err) {
             let sid = req.body.sid;
             let city = req.body.city;
             let sampleFile=req.files.profilePhoto;
-            sampleFile.mv(__dirname+'/upload/'+sampleFile.name);
-            let sql = "update emp set firstName='" + firstName + "',lastName='"+ lastName +"',gender='" + gender + "',hobby='" + hobby + "',sid='" + sid + "',city='" + city + "',profilePhoto='" + sampleFile.name + "' where id = " + id;
+            sampleFile.mv(__dirname+'/upload/'+ uuid.concat(sampleFile.name));
+            let sql = "update emp set firstName='" + firstName + "',lastName='"+ lastName +"',gender='" + gender + "',hobby='" + hobby + "',sid='" + sid + "',city='" + city + "',profilePhoto='" + uuid.concat(sampleFile.name) + "' where id = " + id;
             con.query(sql, (err, result) => {
                 if (err) throw err;
                 res.send("1 Record Updated");
@@ -177,6 +202,28 @@ con.connect(function (err) {
 
     });
 
+    app.post('/api/charge',((req,res)=>{
+        // let token = req.body.stripeToken;
+        let chargeAmount = req.body.chargeAmount;
+        console.log(chargeAmount);
+        let charge = stripe.charges.create({
+            amount: chargeAmount,
+            currency: 'gbp',
+            source: "tok_visa"
+        },((err,charge)=>{
+            if(err && err.type==='StripeCardError'){
+                console.log("Your Card Was Decliend");
+            }
+        }));
+        console.log("Your Payment Successful...");
+        //res.redirect('/paysuccess');
+    }));
+
+    app.post('/getcharges',((req,res)=>{
+        let charge = stripe.charges.capture("ch_1CJjGlD4cio9Fw4glsVxof74", function(charge) {
+            res.send(charge);
+        });
+    }));
 });
 
 app.listen(8010,()=>{

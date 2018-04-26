@@ -1,5 +1,6 @@
 import {LOGIN, LOGOUT,ADDUSER,STATE,CITY} from './../reducer/login-reducer';
 import {ADDEMPLOYEE,GETEMPLOYEE,DELETEEMPLOYEE,EDITEMPLOYEE} from "../reducer/employee-reducer";
+import {ADDTOCARD,DELETETOCARD} from '../reducer/addtocard-reducer';
 import axios from 'axios';
 
 export const loginUser = (info) => {
@@ -70,13 +71,13 @@ export const City = (id) => {
     }
 };
 
-export const addEmployee = (employeeData) => {
+export const addEmployee = (employeeData,jsonObject) => {
     debugger;
     return (dispatch) => {
         axios.post('http://localhost:8010/api/employee',employeeData).then((result) => {
             dispatch({
                 type: ADDEMPLOYEE,
-                payload: employeeData
+                payload: jsonObject
             })
         }).catch((err) => {
             console.log(err);
@@ -112,14 +113,48 @@ export const deleteEmployee = (id) => {
     }
 };
 
-export const editEmployee = (id,employeeData) => {
+export const editEmployee = (id,employeeData,jsonObject) => {
     debugger;
     return (dispatch) => {
         axios.put(`http://localhost:8010/api/employee/${id}`,employeeData).then((result) => {
             console.log(result);
             dispatch({
                 type: EDITEMPLOYEE,
-                payload: {id:id,employeeData:employeeData}
+                payload: jsonObject
+            })
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+};
+
+export const addToCard = (product) => {
+    debugger;
+    return (dispatch) => {
+            dispatch({
+                type: ADDTOCARD,
+                payload: product
+            });
+    }
+};
+
+export const deleteToCard = (id) => {
+    debugger;
+    return (dispatch) => {
+        dispatch({
+            type: DELETETOCARD,
+            payload: id
+        });
+    }
+};
+
+export const addPayment = (chargeAmount) => {
+    debugger;
+    return (dispatch) => {
+        axios.post('http://localhost:8010/api/charge',{chargeAmount}).then((result) => {
+            dispatch({
+                type: DELETEEMPLOYEE,
+                payload: result
             })
         }).catch((err) => {
             console.log(err);

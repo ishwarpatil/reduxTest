@@ -10,7 +10,8 @@ const initialState={
 
 export default (state=initialState,action)=>{
     switch (action.type){
-        case "ADDEMPLOYEE":
+        case ADDEMPLOYEE:
+            debugger;
             const data = state.Employee;
             data.push(action.payload);
             return {...state,Employee:_.cloneDeep(data)};
@@ -24,9 +25,9 @@ export default (state=initialState,action)=>{
         case EDITEMPLOYEE:
             debugger;
             const updateEmp = state.Employee;
-            const findid = action.payload.id;
-            const indexfind = _.findIndex(updateEmp, {'id': findid});
-            updateEmp[indexfind] = action.payload.employeeData;
+            const findid = action.payload;
+            const indexfind = _.findIndex(updateEmp, {'id': findid.id});
+            updateEmp[indexfind] = action.payload;
             return { ...state,Employee:_.cloneDeep(updateEmp)};
         default:
             return state;

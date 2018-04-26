@@ -1,0 +1,14 @@
+.product{
+    margin-left: 2%;
+}
+.product .p1{
+    margin-top: 3%;
+    float: left;
+    border: 8px groove bisque;
+    margin-left: 12%;
+}
+.addToCard Table{
+    margin-top: 5%;
+    width: 30%;
+    margin-left: 20%;
+}

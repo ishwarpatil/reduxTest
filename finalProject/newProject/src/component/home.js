@@ -8,9 +8,7 @@ import {logoutUser} from './../actions/auth';
 class Home extends React.Component{
     constructor(){
         super();
-        this.state = {
-
-        }
+        this.state = {}
     }
 
     goTo1 = () =>{
@@ -40,9 +38,10 @@ class Home extends React.Component{
 const mapStateToProps=(state)=>{return{
 }};
 
-const mapDispatchToProps=(dispatch)=>{return{
-    LogoutUser: () => {dispatch({type: 'LOGOUTUSER'})},
-    goToContact: () => push('/contact'),
-    goToAbout: () => push('/about')
-}};
+const mapDispatchToProps=(dispatch)=>{
+    return{
+        LogoutUser: () => {dispatch({type: 'LOGOUTUSER'})},
+    }
+};
+
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Home));

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Modal,Form,FormGroup,Button,Col,ControlLabel,FormControl } from 'react-bootstrap';
-import {loginUser,addUser} from './../actions/auth';
+import {loginUser,addUser} from '../actions/auth';
 import {bindActionCreators} from 'redux';
 import { connect} from 'react-redux';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Login extends React.Component{
     constructor(){
@@ -65,36 +67,35 @@ class Login extends React.Component{
     render(){
         return (
             <div style={{'margin':'0 auto'}}>
-                <fieldset>
-                    <legend align="center">Login</legend>
+                <div className="container">
                     <center>
-                        <Form horizontal style={{'width':'20%'}}>
-                            <FormGroup controlId="formHorizontalEmail">
-                                <Col componentClass={ControlLabel} sm={2}>
-                                    User Name
-                                </Col>
-                                <Col sm={10}>
-                                    <FormControl type="email" name="username" onChange={this.changeHandler} placeholder="Email" />
-                                </Col>
-                            </FormGroup>
-
-                            <FormGroup controlId="formHorizontalPassword">
-                                <Col componentClass={ControlLabel} sm={2}>
-                                    Password
-                                </Col>
-                                <Col sm={10}>
-                                    <FormControl type="password" name="password" onChange={this.changeHandler} placeholder="Password" />
-                                </Col>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Col smOffset={2} sm={10}>
-                                    <Button onClick={this.loginHandler}>Sign in</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <Button onClick={()=>{this.toggleActive()}}>Sign up</Button>
-                                </Col>
-                            </FormGroup>
-                        </Form>
+                            <div id="login" className="signin-card">
+                                <div className="logo-image">
+                                    <img src="http://www.officialpsds.com/images/thumbs/Spiderman-Logo-psd59240.png" alt="Logo" title="Logo" width="138" />
+                                </div>
+                                <h1 className="display1">Title</h1>
+                                    <p className="subhead">Description</p>
+                                <form action="" method="" className="" role="form">
+                                    <TextField
+                                        name="username"
+                                        onChange={this.changeHandler}
+                                        hintText="Hint Text"
+                                        floatingLabelText="User Name"
+                                    />
+                                    <TextField
+                                        name="password"
+                                        onChange={this.changeHandler}
+                                        hintText="Hint Text"
+                                        floatingLabelText="Password"
+                                    />
+                                    <RaisedButton label="Save" onClick={()=>{this.loginHandler();}} primary={true}  /><br /><br />
+                                    <RaisedButton label="Sign Up" onClick={()=>{this.setState({isActive:true});}} primary={true}  />
+                                </form>
+                            </div>
                     </center>
+                </div>
+
+
                     <Modal
                         show={this.state.isActive}
                         onHide={()=>{
@@ -162,7 +163,6 @@ class Login extends React.Component{
                             }}>Close</Button>
                         </Modal.Footer>
                     </Modal>
-                </fieldset>
             </div>
         )
     }
@@ -176,4 +176,5 @@ const mapDispatchToProps=(dispatch)=>{return{
     LoginUser: (info) => {dispatch({type: 'LOGINUSER',payload:info})},
     AddUser: (info) => {dispatch({type: 'SAGAADDUSER',payload:info})},
 }};
+
 export default connect(mapStateToProps,mapDispatchToProps)(Login);

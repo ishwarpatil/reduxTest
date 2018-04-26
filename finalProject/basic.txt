@@ -213,3 +213,16 @@ export default (state=initialState,action)=>{
             return state;
     }
 }
+
+
+Task: Learning ReactJs
+Work: - Add Customer In Stripe Payment Getway.
+      - Receive Payment In Stripe Payment Getway.
+Status: Running
+Issues: None
+
+<FormControl
+                                    type="number"
+                                    placeholder="Quantity"
+                                    onChange={this.handleChange}
+                                /><br />

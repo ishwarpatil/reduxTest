@@ -31,11 +31,13 @@ class AddEmp extends React.Component{
     constructor(){
         super();
         this.state = {
+            jsonObject:{},
             state:'',
             stateId:'',
             stateName:'',
             city:'',
             profilePhoto:'',
+            dumProfilePhoto:'',
             isActive: false,
             isEditing:false,
             hobbySelector:new Set(),
@@ -64,6 +66,7 @@ class AddEmp extends React.Component{
                 stateName:nextProps.Edit.state,
                 city:nextProps.Edit.city,
                 profilePhoto:nextProps.Edit.profilePhoto,
+                dumProfilePhoto:nextProps.Edit.profilePhoto,
                 addEmp:{
                     firstName:nextProps.Edit.firstName,
                     lastName:nextProps.Edit.lastName,
@@ -76,13 +79,12 @@ class AddEmp extends React.Component{
         this.setState({a:'a'});
     };
 
-
     componentWillMount(){
         this.props.State();
     }
 
     loginHandler=(e)=>{
-        e.preventDefault();
+        //e.preventDefault();
         if(!this.state.EditId){
             console.log("Add...");
             let Obj=new FormData();
@@ -94,13 +96,25 @@ class AddEmp extends React.Component{
             Obj.append('city',this.state.city);
             Obj.append('profilePhoto',this.state.profilePhoto);
             console.log(this.state);
-            this.props.addEmployee(Obj);
+            for (const [key, value]  of Obj.entries()) {
+                if(key==='id'){
+                    this.state.jsonObject[key] = Number(value);
+                }else if(key==='sid'){
+                    this.state.jsonObject[key] = Number(value);
+                }else{
+                    this.state.jsonObject[key] = value;
+                }
+            }
+            //console.log('My Json:-',this.state.jsonObject)
+            this.props.addEmployee(Obj,this.state.jsonObject);
             this.setState({
                 city:'',
                 stateId:'',
             });
             this.props.closeModal();
-            this.props.goToEmp();
+            setTimeout(()=>{
+                this.props.goToEmp();
+            },1000)
         }
         else{
             console.log("Edit...");
@@ -114,12 +128,24 @@ class AddEmp extends React.Component{
             Obj.append('city',this.state.city);
             Obj.append('profilePhoto',this.state.profilePhoto);
             console.log(this.state);
-            this.props.editEmployee(this.state.EditId,Obj);
+            for (const [key, value]  of Obj.entries()) {
+                if(key==='id'){
+                    this.state.jsonObject[key] = Number(value);
+                }else if(key==='sid'){
+                    this.state.jsonObject[key] = Number(value);
+                }else{
+                    this.state.jsonObject[key] = value;
+                }
+            }
+            this.props.editEmployee(this.state.EditId,Obj,this.state.jsonObject);
             this.setState({
                 city:'',
                 stateId:'',
             });
             this.props.closeModal();
+            setTimeout(()=>{
+                this.props.goToEmp();
+            },1000)
         }
     };
 
@@ -163,18 +189,27 @@ class AddEmp extends React.Component{
 
     close=()=>{
         this.props.closeModal();
+        this.setState({
+            EditId:'',
+            state:'',
+            city:'',
+            addEmp:{
+                firstName:'',
+                lastName:'',
+                gender:'',
+                hobby:[],
+            }
+        });
     };
 
     render(){
         return (
             <div>
-                {/*<Button onClick={()=>{this.toggleActive()}}>Add Employees</Button>*/}
-
                 <Modal
-                        show={this.props.show}
-                        onHide={this.close}
-                        container={this}
-                        aria-labelledby="contained-modal-title">
+                    show={this.props.show}
+                    onHide={this.close}
+                    container={this}
+                    aria-labelledby="contained-modal-title">
                         <Modal.Header closeButton>
                             <Modal.Title id="contained-modal-title">
                                 Add New User
@@ -220,7 +255,7 @@ class AddEmp extends React.Component{
                                             onCheck={this.changeHobbyHandler}
                                             label="Cricket"
                                             style={styles.checkbox}
-                                            checked={(this.state.addEmp.hobby.indexOf('Cricket')===-1)?false:true}
+                                            checked={this.state.addEmp && (this.state.addEmp.hobby.indexOf('Cricket')===-1)?false:true}
                                         />
                                         <Checkbox
                                             name="hobby"
@@ -228,8 +263,7 @@ class AddEmp extends React.Component{
                                             onCheck={this.changeHobbyHandler}
                                             label="Reading"
                                             style={styles.checkbox}
-
-                                            checked={(this.state.addEmp.hobby.indexOf('Reading')===-1)?false:true}
+                                            checked={this.state.addEmp && (this.state.addEmp.hobby.indexOf('Reading')===-1)?false:true}
                                         />
                                         <Checkbox
                                             name="hobby"
@@ -237,13 +271,11 @@ class AddEmp extends React.Component{
                                             onCheck={this.changeHobbyHandler}
                                             label="Writing"
                                             style={styles.checkbox}
-                                            checked={(this.state.addEmp.hobby.indexOf('Writing')===-1)?false:true}
+                                            checked={this.state.addEmp && (this.state.addEmp.hobby.indexOf('Writing')===-1)?false:true}
                                         />
                                     </div>
-
                                     <SelectField
                                         name="state"
-                                        //value={this.state.stateId?this.state.stateId:this.state.state}
                                         value={this.state.state}
                                         onChange={this.handleChangeState}
                                         floatingLabelText="State"
@@ -275,15 +307,19 @@ class AddEmp extends React.Component{
                                     /><br /><br />
 
                                     <div>
-                                        <img src={"http://localhost:8010/upload/"+this.state.profilePhoto} width={50} height={50} />
+                                        {
+                                            this.state.EditId?<img src={"http://localhost:8010/upload/"+this.state.dumProfilePhoto} width={50} height={50} />:''
+                                        }
                                     </div>
-
-                                    <RaisedButton label="Save" onClick={this.loginHandler} primary={true} style={styles.Button} />
+                                        {
+                                            this.state.EditId?<RaisedButton label="Update" onClick={()=>{this.loginHandler();this.close();}} primary={true} style={styles.Button} />:
+                                                <RaisedButton label="Save" onClick={()=>{this.loginHandler();this.close();}} primary={true} style={styles.Button} />
+                                        }
                                 </form>
 
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button onClick={this.close}>Close</Button>
+                            <Button onClick={()=>{this.close();}}>Close</Button>
                         </Modal.Footer>
                     </Modal>
             </div>
@@ -294,8 +330,10 @@ class AddEmp extends React.Component{
 const mapStateToProps=(state)=>{return{
     stateData:state.login.state,
     cityData:state.login.city,
-    goToEmp: () => push('/getEmp'),
 }};
 
-const mapDispatchToProps=(dispatch)=>bindActionCreators({State,City,addEmployee,editEmployee},dispatch);
+const mapDispatchToProps=(dispatch)=>bindActionCreators({
+    State,City,addEmployee,editEmployee,
+    goToEmp: () => push('/getEmp'),
+},dispatch);
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(AddEmp));

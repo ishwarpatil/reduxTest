@@ -1,0 +1,25 @@
+<html>
+<head>
+</head>
+<body>
+
+    <div>
+        <h1>Stripe Payment Getway</h1>
+    </div>
+
+    <form action="/charge" method="post">
+        <script
+            src="https://checkout.stripe.com/checkout.js"
+            class="stripe-button"
+            data-key="pk_test_UdoRNiwa9U5z7Q1kTKjet2xR"
+            data-name="cute dog"
+            data-description="this is dog"
+            data-locale="auto"
+            data-currency="gbp"
+        >
+        </script>
+        <input type="hidden" name="chargeAmount" value="85000"/>
+    </form>
+
+</body>
+</html>

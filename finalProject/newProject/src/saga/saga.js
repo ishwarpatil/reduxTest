@@ -29,7 +29,7 @@ function* logout () {
 function* AddUser (action) {
     try{
         debugger;
-        let result=yield axios.post('http://localhost:8010/api/addUser', action.payload);
+        let result=yield axios.post('http://localhost:8010/api/addUser',action.payload);
         yield put({type:"ADDEMPLOYEE",payload:action.payload});
     }catch (e){
         yield put({type:"LOGIN_USER_FAILED",payload:e});

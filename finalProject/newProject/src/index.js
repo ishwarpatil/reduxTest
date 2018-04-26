@@ -11,7 +11,7 @@ import {ConnectedRouter, routerMiddleware} from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 import MuiThemeProvider  from 'material-ui/styles/MuiThemeProvider';
 
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware from 'redux-saga';
 import mySaga from './saga/saga'
 const sagaMiddleware = createSagaMiddleware();
 
@@ -26,4 +26,4 @@ ReactDOM.render(
                 <App/>
             </MuiThemeProvider>
         </ConnectedRouter>
-    </Provider>, document.getElementById('root'));
+</Provider>, document.getElementById('root'));
